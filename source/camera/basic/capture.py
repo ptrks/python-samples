@@ -7,12 +7,15 @@ def _main():
     app = zivid.Application()
     camera = app.connect_camera()
 
-    with camera.update_settings() as updater:
-        updater.settings.iris = 40
-        updater.settings.exposure_time = datetime.timedelta(microseconds=40000)
-        updater.settings.filters.reflection.enabled = True
+    settings = zivid.Settings(
+        acquisitions=[
+            zivid.Settings.Acquisition(
+                aperture=5.6, exposure_time=datetime.timedelta(microseconds=8333),
+            ),
+        ],
+    )
 
-    with camera.capture() as frame:
+    with camera.capture(settings) as frame:
         frame.save("Result.zdf")
 
 

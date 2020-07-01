@@ -17,58 +17,47 @@ def _main():
     camera = app.connect_camera()
 
     print("Configuring the camera settings")
-    settings_collection = [camera.settings for _ in range(3)]
 
-    settings_collection[0].iris = 10
-    settings_collection[0].exposure_time = datetime.timedelta(microseconds=10000)
-    settings_collection[0].brightness = 1
-    settings_collection[0].gain = 1
-    settings_collection[0].bidirectional = 0
-    settings_collection[0].filters.contrast.enabled = True
-    settings_collection[0].filters.Contrast.threshold = 5
-    settings_collection[0].filters.gaussian.enabled = True
-    settings_collection[0].filters.gaussian.sigma = 1.5
-    settings_collection[0].filters.outlier.enabled = True
-    settings_collection[0].filters.outlier.threshold = 5
-    settings_collection[0].filters.reflection.enabled = True
-    settings_collection[0].filters.saturated.enabled = True
-    settings_collection[0].blue_balance = 1.081
-    settings_collection[0].red_balance = 1.709
-
-    settings_collection[1].iris = 20
-    settings_collection[1].exposure_time = datetime.timedelta(microseconds=20000)
-    settings_collection[1].brightness = 0.5
-    settings_collection[1].gain = 2
-    settings_collection[1].bidirectional = 0
-    settings_collection[1].filters.contrast.enabled = True
-    settings_collection[1].filters.contrast.threshold = 5
-    settings_collection[1].filters.gaussian.enabled = True
-    settings_collection[1].filters.gaussian.sigma = 1.5
-    settings_collection[1].filters.outlier.enabled = True
-    settings_collection[1].filters.outlier.threshold = 5
-    settings_collection[1].filters.reflection.enabled = True
-    settings_collection[1].filters.saturated.enabled = True
-    settings_collection[1].blue_balance = 1.081
-    settings_collection[1].red_balance = 1.709
-
-    settings_collection[2].iris = 30
-    settings_collection[2].exposure_time = datetime.timedelta(microseconds=33000)
-    settings_collection[2].brightness = 1
-    settings_collection[2].gain = 1
-    settings_collection[2].bidirectional = 1
-    settings_collection[2].filters.contrast.enabled = True
-    settings_collection[2].filters.contrast.threshold = 5
-    settings_collection[2].filters.gaussian.enabled = True
-    settings_collection[2].filters.gaussian.sigma = 1.5
-    settings_collection[2].filters.outlier.enabled = True
-    settings_collection[2].filters.outlier.threshold = 5
-    settings_collection[2].filters.reflection.enabled = True
-    settings_collection[2].filters.saturated.enabled = True
-    settings_collection[2].blue_balance = 1.081
-    settings_collection[2].red_balance = 1.709
+    settings = zivid.Settings(
+        acquisitions=[
+            zivid.Settings.Acquisition(
+                aperture=23.42,
+                exposure_time=datetime.timedelta(microseconds=10000),
+                brightness=1,
+                gain=1,
+            ),
+            zivid.Settings.Acquisition(
+                aperture=6.28,
+                exposure_time=datetime.timedelta(microseconds=20000),
+                brightness=0.5,
+                gain=2,
+            ),
+            zivid.Settings.Acquisition(
+                aperture=3.43,
+                exposure_time=datetime.timedelta(microseconds=33000),
+                brightness=1,
+                gain=1,
+            ),
+        ],
+    )
+    filters = settings.processing.filters
+    filters.noise.removal.enabled = True
+    filters.noise.removal.threshold = 10
+    filters.smoothing.gaussian.enabled = True
+    filters.smoothing.gaussian.sigma = 1.5
+    filters.outlier.enabled = True
+    filters.outlier.threshold = 5
+    filters.experimental.contrast_distortion.correction.enabled = True
+    filters.experimental.contrast_distortion.correction.strength = 0.4
+    filters.experimental.contrast_distortion.removal.enabled = False
+    filters.experimental.contrast_distortion.removal.threshold = 0.6
+    balance = settings.processing.color.balance
+    balance.red = 1.0
+    balance.blue = 1.0
+    balance.green = 1.0
 
     print("Capturing an HDR frame")
-    with camera.capture(settings_collection) as hdr_frame:
+    with camera.capture(settings) as hdr_frame:
         print("Saving the HDR frame")
         hdr_frame.save("HDR.zdf")
 

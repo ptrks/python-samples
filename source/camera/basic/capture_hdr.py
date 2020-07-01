@@ -6,12 +6,15 @@ def _main():
     app = zivid.Application()
     camera = app.connect_camera()
 
-    settings_list = [camera.settings for _ in range(3)]
-    settings_list[0].iris = 14
-    settings_list[1].iris = 21
-    settings_list[2].iris = 35
+    settings = zivid.Settings(
+        acquisitions=[
+            zivid.Settings.Acquisition(aperture=10.9,),
+            zivid.Settings.Acquisition(aperture=5.8,),
+            zivid.Settings.Acquisition(aperture=2.8,),
+        ],
+    )
 
-    with camera.capture(settings_list) as hdr_frame:
+    with camera.capture(settings) as hdr_frame:
         hdr_frame.save("Result.zdf")
 
 
