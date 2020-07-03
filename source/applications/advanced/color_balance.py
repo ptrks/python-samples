@@ -154,7 +154,6 @@ def _color_balance_calibration(camera, settings_2d):
     print("Starting color balance calibration")
     corrected_red_balance = 1.0
     corrected_blue_balance = 1.0
-    # TODO: Update algorithm to account for green as well.
     first_iteration = True
     while True:
         settings_2d.processing.color.balance.red = corrected_red_balance
